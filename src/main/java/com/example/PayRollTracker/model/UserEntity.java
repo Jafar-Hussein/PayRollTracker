@@ -3,6 +3,8 @@ package com.example.PayRollTracker.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "users")
@@ -23,12 +25,11 @@ public class UserEntity {
     @Getter
     @Setter
     private Roles role;
-    // relation with checkin
-    @OneToOne(mappedBy = "user")
-    private CheckIn checkIn;
-    // relation with checkout
-    @OneToOne(mappedBy = "user")
-    private CheckOut checkOut;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<CheckIn> checkIns;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<CheckOut> checkOuts;
     @OneToOne(mappedBy = "user")
     private PayRoll payRoll;
 

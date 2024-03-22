@@ -20,13 +20,13 @@ public class AdminController {
         return userService.saveUser(userDTO);
     }
 
-    @PostMapping("name")
+    @GetMapping("name")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> findByName(@RequestBody String username) {
         return ResponseEntity.ok(userService.findByUsername(username));
     }
 
-    @PostMapping("all")
+    @GetMapping("all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDTO>> findAllUsers() {
         return ResponseEntity.ok(userService.findAllUsers());

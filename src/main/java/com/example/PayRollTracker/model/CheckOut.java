@@ -3,6 +3,7 @@ package com.example.PayRollTracker.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.sql.Time;
 import java.util.Date;
 
 @Entity
@@ -12,7 +13,8 @@ public class CheckOut {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date checkOutTime;
-    @OneToOne
+    private Time checkOutTime;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 }

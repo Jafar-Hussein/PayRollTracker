@@ -1,6 +1,7 @@
 package com.example.PayRollTracker.controller;
 
 import com.example.PayRollTracker.dto.UserDTO;
+import com.example.PayRollTracker.dto.UserInfoDTO;
 import com.example.PayRollTracker.model.ResponseMessage;
 import com.example.PayRollTracker.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -8,13 +9,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/user/")
 @RequiredArgsConstructor
 public class UserController {
 private final UserService userService;
+
+@PostMapping("saveInfo")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+public ResponseEntity<?> saveUserInfo(@RequestBody UserInfoDTO userDTO) {
+    if (userDTO == null) {
+        return ResponseEntity.badRequest().body(new ResponseMessage("User information cannot be null"));
+    }
+    userService.addUserInfo(userDTO);
+    return ResponseEntity.ok("User information saved successfully");
+}
 
 @PutMapping("changePass")
 @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -34,4 +44,5 @@ public ResponseEntity<?> updateInfo(@RequestBody UserDTO userDTO) {
     }
     return ResponseEntity.ok(userService.updateUserInfo(userDTO));
 }
+
 }

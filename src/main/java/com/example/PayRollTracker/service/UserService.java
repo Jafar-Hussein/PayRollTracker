@@ -4,6 +4,7 @@ import com.example.PayRollTracker.dto.UserDTO;
 import com.example.PayRollTracker.dto.UserInfoDTO;
 import com.example.PayRollTracker.model.UserEntity;
 import com.example.PayRollTracker.model.UserInfo;
+import com.example.PayRollTracker.repo.UserInfoRepo;
 import com.example.PayRollTracker.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepo userRepo;
+    private final UserInfoRepo userInfoRepo;
     private final ModelMapper modelMapper;
 
     //admin functions
@@ -101,20 +103,47 @@ public class UserService {
         return ResponseEntity.ok("Password changed successfully");
     }
 
+    // add user info
+    public ResponseEntity<?> addUserInfo(UserInfoDTO userInfoDto) {
+        // Get the current user
+        UserEntity currentUser = getCurrentUser();
+
+        // Check if the user already has user info
+        if (currentUser.getUserInfo() != null) {
+            return ResponseEntity.badRequest().body("User information already exists");
+        }
+
+        // Convert UserInfoDTO to UserInfo
+        UserInfo userInfo = modelMapper.map(userInfoDto, UserInfo.class);
+
+        // Set the user for the user info
+        userInfo.setUser(currentUser);
+
+        // Save the user info
+        userInfoRepo.save(userInfo);
+
+        return ResponseEntity.ok("User information added successfully");
+    }
+
     // user updates their info
     public ResponseEntity<?> updateUserInfo(UserDTO userDto) {
         // Get the current user
         UserEntity currentUser = getCurrentUser();
-        // Check if the user is trying to update their own information
-        if (!currentUser.getUsername().equals(userDto.getUsername())) {
-            return ResponseEntity.badRequest().body("You are not authorized to update another user's information");
-        }
-        // Update the current user's information
-        currentUser.setPassword(userDto.getPassword());
-        // You can add more fields here if needed
 
-        // Save the updated user
-        userRepo.save(currentUser);
+        // Check if the user has user info
+        if (currentUser.getUserInfo() == null) {
+            return ResponseEntity.badRequest().body("User information does not exist");
+        }
+
+        // Convert UserDTO to UserInfo
+        UserInfo userInfo = modelMapper.map(userDto, UserInfo.class);
+
+        // Set the user for the user info
+        userInfo.setUser(currentUser);
+
+        // Save the user info
+        userInfoRepo.save(userInfo);
+
         return ResponseEntity.ok("User information updated successfully");
     }
 
